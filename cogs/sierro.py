@@ -88,7 +88,7 @@ class Sierro(commands.Cog):
 
         embed.add_field(name='Draws', value=draws, inline=True)
 
-        if data['target']:
+        if 'target' in data:
             embed.add_field(name='Spark Target', value=data['target'], inline=False)
 
         return embed
