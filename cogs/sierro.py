@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 import math
 import mariadb
+import sys
 
 class Sierro(commands.Cog):
     def __init__(self, bot: commands.Bot, conn_params: dict) -> None:
@@ -31,10 +32,12 @@ class Sierro(commands.Cog):
 
             await interaction.response.send_message(embed=spark_embed)
         except IOError as ioe:
-            print(f"ERROR: {ioe}")
+            exception_type, exception_object, exception_traceback = sys.exc_info()
+            print(f"ERROR ({exception_type}) {ioe}. Line traceback: {exception_traceback.tb_lineno}")
             await interaction.response.send_message('Could not connect to the backend for some reason... Please try again shortly or contact @koipoi')
         except Exception as e:
-            print(f"ERROR: {e}")
+            exception_type, exception_object, exception_traceback = sys.exc_info()
+            print(f"ERROR ({exception_type}) {e}. Line traceback: {exception_traceback.tb_lineno}")
             await interaction.response.send_message('Could not display total sparks for some reason... Please try again shortly or contact @koipoi')
 
 
