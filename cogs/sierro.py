@@ -108,7 +108,7 @@ class Sierro(commands.Cog):
 
             data = self.db_client.fetchone()
 
-            return { "crystals": data[0], "tenpull_tix": data[1], "single_tix": data[2], } if data is None else None
+            return { "crystals": data[0], "tenpull_tix": data[1], "single_tix": data[2], } if data is not None else None
         except mariadb.Error as e:
             print(f"Error: {e}")
             raise e
