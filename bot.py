@@ -15,7 +15,7 @@ class OrchisBot(commands.Bot):
         intents.members = True
         intents.message_content = True
         
-        super().__init__(activity=discord.Game(name='being a harvin'), command_prefix='!', intents=intents)
+        super().__init__(activity=discord.Game(name='keeping DB connections open unnecessarily'), command_prefix='!', intents=intents)
         self.MY_GUILD = os.getenv('SERVER')
         self.backend_settings = {
             "user": os.getenv("DB_USER"),
