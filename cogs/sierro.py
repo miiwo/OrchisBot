@@ -55,9 +55,12 @@ class Sierro(commands.Cog):
     @app_commands.command(name='setsparktarget', description='Type the name of the character(s) or weapon(s) you want to spark')
     @app_commands.describe(target='Your character/weapon target')
     async def sparkTarget(self, interaction: discord.Interaction, target: str) -> None:
-        await interaction.response.send_message(f'This feature is still being implemented... Sorry!')
-        return
-        #await interaction.response.send_message(f'Your spark target has been set to: {target}!')
+        set_spark_success = await self.insertTargetToBackend(interaction.user.id, target)
+
+        if set_spark_success:
+            await interaction.response.send_message(f'Your spark target has been set to: `{target}`!')
+        else:
+            await interaction.response.send_message('Something went wrong with setting your spark target :( Please message koipoi to notify them of the issue')
 
 
     async def createSparkEmbed(self, data):
@@ -83,8 +86,11 @@ class Sierro(commands.Cog):
 
             embed.add_field(name='Draws', value=draws, inline=True)
 
-            if 'target' in data:
+            if data['target'] != "NULL":
                 embed.add_field(name='Spark Target', value=data['target'], inline=False)
+            else:
+                embed.add_field(name='Spark Target', value='No spark target set.', inline=False)
+
         except Exception as e:
             print(f"ORCHIS BOT ERROR in createSparkEmbed function. {e}")
             embed = None
@@ -110,11 +116,11 @@ class Sierro(commands.Cog):
             db_connection = mariadb.connect(**self.db_params)
             db_client = db_connection.cursor()
 
-            db_client.execute("SELECT crystals,tenpull,onepull FROM sparks where id=?", (key,))
+            db_client.execute("SELECT crystals,tenpull,onepull,spark_target FROM sparks where id=?", (key,))
             data = db_client.fetchone()
 
             if data is not None:
-                result = { "crystals": data[0], "tenpull_tix": data[1], "single_tix": data[2], }
+                result = { "crystals": data[0], "tenpull_tix": data[1], "single_tix": data[2], "target": data[3]}
 
         except mariadb.Error as e:
             print(f"OrchisBot Error: {e}")
@@ -145,6 +151,27 @@ class Sierro(commands.Cog):
 
         except Exception as e:
             print(f"OrchisBot Error: Inserting into backend. {e}")
+            return False
+        else:
+            db_connection.close()
+
+        return True
+
+    async def insertTargetToBackend(self, id, target: str) -> bool:
+        try:
+            db_connection = mariadb.connect(**self.db_params)
+            db_client = db_connection.cursor()
+
+            data = await self.fetchFromBackend(id)
+
+            if data is None:
+                db_client.execute("INSERT INTO sparks (id, crystals, tenpull, onepull, spark_target) VALUES (?,0,0,0,?)", (id, target))
+            else:
+                db_client.execute("UPDATE sparks set spark_target=? where id=?", (target, id))
+
+            db_connection.commit()
+        except Exception as e:
+            print(f"OrchisBot Error: Inserting spark target into backend. {e}")
             return False
         else:
             db_connection.close()
