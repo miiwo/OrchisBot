@@ -15,7 +15,7 @@ class OrchisBot(commands.Bot):
         intents.members = True
         intents.message_content = True
         
-        super().__init__(activity=discord.Game(name='keeping DB connections open unnecessarily'), command_prefix='!', intents=intents)
+        super().__init__(activity=discord.Game(name='getting more functionality!'), command_prefix='!', intents=intents)
         self.MY_GUILD = os.getenv('SERVER')
         self.backend_settings = {
             "user": os.getenv("DB_USER"),
@@ -25,9 +25,18 @@ class OrchisBot(commands.Bot):
             "database": os.getenv("DB_NAME")
         }
 
+        self.wep_backend_settings = {
+                "user": os.getenv("DB_USER"),
+                "password": os.getenv("DB_PASS"),
+                "host": os.getenv("DB_HOST"),
+                "port": int(os.getenv("DB_PORT")),
+                "database": os.getenv("WEP_DB_NAME")
+        }
+
     async def setup_hook(self):
         print('Loading cogs...')
         await self.load_extension(f"cogs.sierro")
+        await self.load_extension(f"cogs.weapons_charas")
 
         print('Syncing command tree...')
         await orchis.tree.sync(guild=discord.Object(id=self.MY_GUILD))
