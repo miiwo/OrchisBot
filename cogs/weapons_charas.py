@@ -21,7 +21,7 @@ class WeaponsAndCharas(commands.Cog):
         try:
             data = await self.fetchWeaponFromBackend(wep_name)
             if data is None:
-                await interaction.response.send_message('There was no data in the database for that wep name. Please use the exact name next time!')
+                await interaction.response.send_message(f'You searched for: {wep_name}. There was no data in the database for that wep name.')
                 return
             
             weapon_pic = discord.File(data['pic'], filename="gbf_image.jpg") if data['pic'] is not None else None
@@ -36,13 +36,13 @@ class WeaponsAndCharas(commands.Cog):
             exception_type, exception_object, exception_traceback = sys.exc_info()
             print(f"ERROR ({exception_type}) {ioe}. Line traceback: {exception_traceback.tb_lineno}")
 
-            await interaction.response.send_message('Could not connect to the backend for some reason... Please try again shortly or contact the dev koipoi')
+            await interaction.response.send_message('Could not connect to the backend for some reason. Please try again shortly or contact the dev koipoi')
 
         except Exception as e:
             exception_type, exception_object, exception_traceback = sys.exc_info()
             print(f"ERROR ({exception_type}) {e}. Line traceback: {exception_traceback.tb_lineno}")
 
-            await interaction.response.send_message('There was an error with trying to get the weapon... Please try again shortly or contact the dev koipoi')
+            await interaction.response.send_message('There was an error with trying to get the weapon. Please try again shortly or contact the dev koipoi')
 
     async def createWeaponEmbed(self, data, file_pic: discord.File, filename: str):
         embed = discord.Embed(
@@ -52,7 +52,7 @@ class WeaponsAndCharas(commands.Cog):
 
         if file_pic is not None:
             embed.set_image(url=f'attachment://{filename}')
-            
+
         embed.add_field(name='Element', value=data['element'].title(), inline=True)
         embed.add_field(name='Weapon Type', value=data['weapon_type'].title(), inline=True)
         if data['wep_series'] is not None:
