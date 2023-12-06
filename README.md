@@ -1,7 +1,7 @@
 # Orchis Bot
 
 ## How to run
-Setup the backend DB. This bot uses an SQL backend at the moment, and it can be setup by running the `setup.sql` script in the `backend` folder. 
+Setup the backend DB. This bot uses an SQL (MariaDB) backend at the moment, and it can be setup by running the `setup.sql` script in the `backend` folder. 
 Please replace values surrounded by <> with your own values in the setup script.
 
 Setup the `.env` file with the following values:
@@ -15,3 +15,6 @@ Wait for it to finish downloading all of the necessary packages.
 
 Then run this for the bot to go online.
 `$ python bot.py`
+
+## Troubleshooting
+To login to DB, use: `mysql -u <username> -p <DBNAME>`
