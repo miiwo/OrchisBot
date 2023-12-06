@@ -24,10 +24,13 @@ class WeaponsAndCharas(commands.Cog):
                 await interaction.response.send_message('There was no data in the database for that wep name. Please use the exact name next time!')
                 return
             
-            weapon_pic = discord.File(data['pic'], filename="gbf_image.jpg")
+            weapon_pic = discord.File(data['pic'], filename="gbf_image.jpg") if data['pic'] is not None else None
             wepEmbed = await self.createWeaponEmbed(data, weapon_pic, "gbf_image.jpg")
 
-            await interaction.response.send_message(file=weapon_pic, embed=wepEmbed)
+            if weapon_pic is not None:
+                await interaction.response.send_message(file=weapon_pic, embed=wepEmbed)
+            else:
+                await interaction.response.send_message(embed=wepEmbed)
 
         except IOError as ioe:
             exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -47,7 +50,9 @@ class WeaponsAndCharas(commands.Cog):
                     color=0x336EFF
         )
 
-        embed.set_image(url=f'attachment://{filename}')
+        if file_pic is not None:
+            embed.set_image(url=f'attachment://{filename}')
+            
         embed.add_field(name='Element', value=data['element'].title(), inline=True)
         embed.add_field(name='Weapon Type', value=data['weapon_type'].title(), inline=True)
         if data['wep_series'] is not None:
