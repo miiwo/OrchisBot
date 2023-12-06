@@ -60,7 +60,7 @@ class WeaponsAndCharas(commands.Cog):
 
 
         for idx, wep_skill in enumerate(data["wep_skills"]):
-            embed.add_field(name=f'Weapon Skill {idx+1}', value=f'*{wep_skill[0]}*\n{wep_skill[2]} | {wep_skill[1]}', inline=False)
+            embed.add_field(name=f'Weapon Skill {idx+1}', value=f'*{wep_skill[0]}*\n{wep_skill[2]}\n{wep_skill[1]}', inline=False)
 
 
         return embed
