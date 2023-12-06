@@ -23,7 +23,7 @@ class WeaponsAndCharas(commands.Cog):
             if data is None:
                 await interaction.response.send_message('There was no data in the database for that wep name. Please use the exact name next time!')
                 return
-
+            
             weapon_pic = discord.File(data['pic'], filename="gbf_image.jpg")
             wepEmbed = await self.createWeaponEmbed(data, weapon_pic, "gbf_image.jpg")
 
@@ -50,6 +50,8 @@ class WeaponsAndCharas(commands.Cog):
         embed.set_image(url=f'attachment://{filename}')
         embed.add_field(name='Element', value=data['element'].title(), inline=True)
         embed.add_field(name='Weapon Type', value=data['weapon_type'].title(), inline=True)
+        if data['wep_series'] is not None:
+            embed.add_field(name='Series', value=data['wep_series'].title(), inline=True)
 
 
         for idx, wep_skill in enumerate(data["wep_skills"]):
@@ -60,14 +62,35 @@ class WeaponsAndCharas(commands.Cog):
         
     async def fetchWeaponFromBackend(self, name: str) -> dict:
         try:
-            self.db_client.execute("SELECT name, element, wep_type, picture_small, id FROM Weapons WHERE name = ?", (name,))
+            # Look in alias table
+            self.db_client.execute("SELECT id from WepNameAlias where name like ?", (name,))
+            alias_id = self.db_client.fetchone()
+
+            if alias_id is None:
+                self.db_client.execute("SELECT name, element, wep_type, picture_small, id FROM Weapons WHERE name like ?", (name,))
+            else:
+                self.db_client.execute("SELECT name, element, wep_type, picture_small, id FROM Weapons WHERE id = ?", (alias_id[0],))
+
             wep_data = self.db_client.fetchone()
             if wep_data is None:
                 return None
+
             self.db_client.execute("SELECT name, description, boost_type FROM weapon_skills WHERE id in (SELECT wep_skill_id FROM weapon_skills_relationship WHERE wep_id = ?)", (wep_data[4],))
             skill_data = self.db_client.fetchall()
 
-            return {"name": wep_data[0], "element": wep_data[1], "weapon_type": wep_data[2], "pic": wep_data[3], "wep_skills": skill_data} if wep_data is not None else None
+            wep_series = None
+            for series_name in ['epic', 'vyrmament', 'olden primal', 'ultima', 'cosmos', 'vintage', 'superlative', 'illustrious', 'sephira', 'seraphic', 'bahamut', 'primal', 'magna', 'grand', 'regalia', 'rose', 'relic', 'ccw', 'rusted', 'rotb', 'revenant', 'replica', 'xeno', 'hollowsky', 'dark opus', 'astral', 'draconic', 'ennead', '6D', 'nwf', 'militis', 'malice', 'menace', 'pg', 'revans', 'world']:
+                try:
+                    self.db_client.execute(f"SELECT id from {series_name} where id = ?", (wep_data[4],))
+                    temp_wep_series = self.db_client.fetchone()
+                    if temp_wep_series is not None:
+                        wep_series = series_name
+                        break
+                except Exception as e:
+                    pass
+
+            return {"name": wep_data[0], "element": wep_data[1], "weapon_type": wep_data[2], "pic": wep_data[3], "wep_skills": skill_data, "wep_series": wep_series} if wep_data is not None else None
+
         except mariadb.Error as e:
             print(f"Error: {e}")
             raise e
