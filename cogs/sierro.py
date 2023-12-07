@@ -48,7 +48,7 @@ class Sierro(commands.Cog):
 
             spark_embed = await self.createSparkEmbed(data)
 
-            await interaction.response.send_message(content=f'Your sparks have been saved into the bot! {"Embed cannot be displayed at this time however :(" if spark_embed is None else ""}', embed=spark_embed)
+            await interaction.response.send_message(content=f'Your sparks have been saved into the bot {f"Embed cannot be displayed at this time however :(" if spark_embed is None else ""}', embed=spark_embed)
         else:
             await interaction.response.send_message('Your sparks did not save properly into the bot, please try again shortly or contact @koipoi')
 
