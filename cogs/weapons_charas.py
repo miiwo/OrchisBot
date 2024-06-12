@@ -83,12 +83,12 @@ class WeaponsAndCharas(commands.Cog):
             
             if wep_data[6] is None:
                 if wep_data[7] is None:
-                    self.db_client.execute("SELECT name, description, boost_type, skill_perc_lvl_ten FROM weapon_skills WHERE id in (SELECT wep_skill_id FROM weapon_skills_relationship WHERE wep_id = ?)", (wep_data[4],))
+                    self.db_client.execute("SELECT name, description, boost_type, skill_perc_lvl_ten FROM weapon_skills WHERE id in (SELECT weapon_skill_id FROM weapon_skills_relationship WHERE weapon_id = ?)", (wep_data[4],))
                 else:
-                    self.db_client.execute("SELECT name, description, boost_type, skill_perc_lvl_fifteen FROM weapon_skills WHERE id in (SELECT wep_skill_id FROM weapon_skills_relationship WHERE wep_id = ?)", (wep_data[4],))
+                    self.db_client.execute("SELECT name, description, boost_type, skill_perc_lvl_fifteen FROM weapon_skills WHERE id in (SELECT weapon_skill_id FROM weapon_skills_relationship WHERE weapon_id = ?)", (wep_data[4],))
 
             else:
-                self.db_client.execute("SELECT name, description, boost_type, skill_perc_lvl_twenty FROM weapon_skills WHERE id in (SELECT wep_skill_id FROM weapon_skills_relationship WHERE wep_id = ?)", (wep_data[4],))
+                self.db_client.execute("SELECT name, description, boost_type, skill_perc_lvl_twenty FROM weapon_skills WHERE id in (SELECT weapon_skill_id FROM weapon_skills_relationship WHERE weapon_id = ?)", (wep_data[4],))
             skill_data = self.db_client.fetchall()
 
             wep_series = None

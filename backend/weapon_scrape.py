@@ -14,37 +14,44 @@ def insert_to_skills_db(wep_name, skill_name):
             "password": os.getenv("DB_PASS"),
             "host": os.getenv("DB_HOST"),
             "port": int(os.getenv("DB_PORT")),
-            "database": os.getenv("DB_NAME")
+            "database": os.getenv("WEP_DB_NAME")
         }
         connection = mariadb.connect(**backend_settings)
         dbClient = connection.cursor()
 
-        dbClient.execute("""select id from Weapons where name = %s""", (wep_name))
+        dbClient.execute("SELECT id FROM Weapons WHERE name = ?", (wep_name,))
         try:
             wep_id = dbClient.fetchall()[0][0]
         except:
-            print('Weapon does not exist in db')
+            print('Weapon does not exist in db: ' + wep_name)
             return
-        dbClient.execute("""select  id from weapon_skills where name = %s""", (skill_name))
-        skill_id = dbClient.fetchall()[0][0]
-        dbClient.execute("""select  count(*) from weapon_skills_relationship where wep_id = %s and wep_skill_id = %s""", (wep_id, skill_id))
-        exists = dbClient.fetchall()
+        dbClient.execute("SELECT id FROM weapon_skills WHERE name = ?", (skill_name,))
+        try:
+            skill_id = dbClient.fetchall()[0][0]
+        except:
+            print('Skill name does not exist in db: ' + skill_name)
+            return
+        dbClient.execute("SELECT count(*) FROM weapon_skills_relationship WHERE wep_id = ? AND wep_skill_id = ?", (wep_id, skill_id))
+        exists = dbClient.fetchall()[0][0]
         if not exists:
-            dbClient.execute("""insert into weapon_skills_relationship (wep_id, wep_skill_id) values (%s, %s)""", (wep_id, skill_id))
+            dbClient.execute("INSERT INTO weapon_skills_relationship (wep_id, wep_skill_id) VALUES (?, ?)", (wep_id, skill_id))
+            connection.commit()
+            connection.close()
             print('Added to weapon skills relationship!')
         else:
             print('Already recorded, moving onto next...')
-    except:
+    except Exception as e:
         print('Something happened when trying to insert into database')
+        raise e
     
 
 def main():
     # Grab raw page source
     # Process it into a python object
     # Feed it into database
-    wep_list = ['Bloody Scar', 'Cute Ribbon', 'Diablo Bow']
+    wep_list = ['Distant Requiem', "Miming's Baselard", 'Shadow Viperlance', 'Unparalleled Chopsticks']
     for wep_name in wep_list:
-        insert_to_skills_db(wep_name, "Dark's Might")
+        insert_to_skills_db(wep_name, "Hatred's Celere")
     # Repeat as necessary
 
 main()
