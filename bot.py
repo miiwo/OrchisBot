@@ -17,6 +17,7 @@ class OrchisBot(commands.Bot):
         
         super().__init__(activity=discord.Game(name='getting more functionality!'), command_prefix='!', intents=intents)
         self.MY_GUILD = os.getenv('SERVER')
+        self.WEP_DATA_DIR = os.getenv('GBF_WEP_DIR')
         self.backend_settings = {
             "user": os.getenv("DB_USER"),
             "password": os.getenv("DB_PASS"),

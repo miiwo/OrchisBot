@@ -24,7 +24,7 @@ class WeaponsAndCharas(commands.Cog):
                 await interaction.response.send_message(f'You searched for: {wep_name}. There was no data in the database for that wep name.')
                 return
             
-            weapon_pic = discord.File(data['pic'], filename="gbf_image.jpg") if data['pic'] is not None else None
+            weapon_pic = discord.File(f"{self.bot.WEP_DATA_DIR}{data['pic']}", filename="gbf_image.jpg") if data['pic'] is not None else None
             wepEmbed = await self.createWeaponEmbed(data, weapon_pic, "gbf_image.jpg")
 
             if weapon_pic is not None:

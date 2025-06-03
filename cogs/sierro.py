@@ -114,6 +114,7 @@ class Sierro(commands.Cog):
 
         try:
             db_connection = mariadb.connect(**self.db_params)
+            db_connection.auto_reconnect = True
             db_client = db_connection.cursor()
 
             db_client.execute("SELECT crystals,tenpull,onepull,spark_target FROM sparks where id=?", (key,))
@@ -138,6 +139,7 @@ class Sierro(commands.Cog):
     async def insertToBackend(self, id, crystal: int, tenpull: int, singlepull: int) -> bool:
         try:
             db_connection = mariadb.connect(**self.db_params)
+            db_connection.auto_reconnect = True
             db_client = db_connection.cursor()
 
             data = await self.fetchFromBackend(id)
@@ -160,6 +162,7 @@ class Sierro(commands.Cog):
     async def insertTargetToBackend(self, id, target: str) -> bool:
         try:
             db_connection = mariadb.connect(**self.db_params)
+            db_connection.auto_reconnect = True
             db_client = db_connection.cursor()
 
             data = await self.fetchFromBackend(id)

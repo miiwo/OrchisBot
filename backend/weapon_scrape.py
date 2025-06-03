@@ -1,5 +1,5 @@
-from bs4 import BeautifulSoup
-from seleniumbase import SB
+#from bs4 import BeautifulSoup
+#from seleniumbase import SB
 import mariadb
 
 import os
@@ -31,10 +31,10 @@ def insert_to_skills_db(wep_name, skill_name):
         except:
             print('Skill name does not exist in db: ' + skill_name)
             return
-        dbClient.execute("SELECT count(*) FROM weapon_skills_relationship WHERE wep_id = ? AND wep_skill_id = ?", (wep_id, skill_id))
+        dbClient.execute("SELECT count(*) FROM weapon_skills_relationship WHERE weapon_id = ? AND weapon_skill_id = ?", (wep_id, skill_id))
         exists = dbClient.fetchall()[0][0]
         if not exists:
-            dbClient.execute("INSERT INTO weapon_skills_relationship (wep_id, wep_skill_id) VALUES (?, ?)", (wep_id, skill_id))
+            dbClient.execute("INSERT INTO weapon_skills_relationship (weapon_id, weapon_skill_id) VALUES (?, ?)", (wep_id, skill_id))
             connection.commit()
             connection.close()
             print('Added to weapon skills relationship!')
@@ -49,9 +49,10 @@ def main():
     # Grab raw page source
     # Process it into a python object
     # Feed it into database
-    wep_list = ['Distant Requiem', "Miming's Baselard", 'Shadow Viperlance', 'Unparalleled Chopsticks']
+    wep_list = ["Glam Brush"]
     for wep_name in wep_list:
-        insert_to_skills_db(wep_name, "Hatred's Celere")
+        insert_to_skills_db(wep_name, "Hatred's Fandango")
+        #insert_to_skills_db(wep_name, "Lifetree's Trium III")
     # Repeat as necessary
 
 main()
